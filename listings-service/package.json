@@ -2,5 +2,13 @@
   "name": "listings-service",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/polyfill": "^7.10.4",
+    "@babel/preset-env": "^7.10.4"
+  },
+  "devDependencies": {
+    "babel-watch": "^7.0.0"
+  }
 }
