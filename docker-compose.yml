@@ -5,7 +5,7 @@ services:
     depends_on:
       - listings-service-db
     environment:
-      - DB_URI=mysql://root:password@listings-service-db/listings-servive-db?charset=UTF8
+      - DB_URI=mysql://root:password@listings-service-db/db?charset=UTF8
     volumes:
       - ./listings-service:/opt/app
 
@@ -22,7 +22,8 @@ services:
     depends_on:
       - users-service-db
     environment:
-      - DB_URI=mysql://root:password@users-service-db/users-service-db?charset=UTF8
+      - DB_URI=mysql://root:password@users-service-db/
+        db?charset=UTF8
     volumes:
       - ./users-service:/opt/app
 
