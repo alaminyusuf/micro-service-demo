@@ -1,3 +1,4 @@
-import path from 'path'
+import '@babel/polyfill';
 
-console.log('working')
+import './db/connection';
+import '#root/server/startServer';
