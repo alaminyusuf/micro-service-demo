@@ -2,8 +2,8 @@ import { DataTypes, Model } from 'sequelize';
 
 import sequelize from './connection';
 
-export class Listings extends Model {}
-Listings.init(
+export class Listing extends Model {}
+Listing.init(
   {
     title: {
       allowNull: false,
@@ -15,7 +15,7 @@ Listings.init(
     },
   },
   {
-    modelName: 'Listings',
+    modelName: 'listings',
     sequelize,
   }
 );

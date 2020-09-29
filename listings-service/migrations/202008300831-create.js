@@ -12,7 +12,7 @@ module.exports.up = (queryInterface, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
       },
-      descriptin: {
+      description: {
         allowNull: false,
         type: DataTypes.TEXT,
       },
@@ -32,5 +32,5 @@ module.exports.up = (queryInterface, DataTypes) => {
     {
       charset: 'utf8',
     }
-  )
-}
+  );
+};
