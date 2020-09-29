@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: (origin, cb) => cd(null, true),
+    origin: (origin, cb) => cb(null, true),
     credential: true,
   })
 );
