@@ -6,7 +6,7 @@ import express from 'express';
 import resolvers from '#root/graphql/resolvers';
 import typeDefs from '#root/graphql/typeDefs';
 
-import accessEnv from '#root/helpers/accessEnv';
+// import accessEnv from '#root/helpers/accessEnv';
 
 const apolloServer = new ApolloServer({
   context: (a) => a,
