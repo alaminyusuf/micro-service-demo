@@ -1,29 +1,31 @@
 import cors from 'cors';
 import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import 'express-async-errors';
 
-// import accessEnv from '../helpers/accessEnv';
-
+import logger from '#root/helpers/logger';
 import setupRoutes from './routes';
+import errorHandler from './middleware/errorHandler';
 
 const app = express();
 
+app.use(helmet());
+app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 app.use(express.json());
 
 app.use(
   cors({
     origin: (origin, cb) => cb(null, true),
-    credential: true,
+    credentials: true,
   })
 );
 
 setupRoutes(app);
 
-app.use((err, req, res, next) => {
-  return res.status(500).json({
-    message: err.message,
-  });
-});
+app.use(errorHandler);
 
-app.listen(7101, () =>
-  console.log('users services listening on port 7101')
+const port = 7101;
+app.listen(port, '0.0.0.0', () =>
+  logger.info(`Users service listening on port ${port}`)
 );
