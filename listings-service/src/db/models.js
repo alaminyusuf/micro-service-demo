@@ -13,6 +13,10 @@ Listing.init(
       allowNull: false,
       type: DataTypes.TEXT,
     },
+    userId: {
+      allowNull: false,
+      type: DataTypes.UUID,
+    },
   },
   {
     modelName: 'listings',
