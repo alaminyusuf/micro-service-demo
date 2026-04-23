@@ -4,8 +4,9 @@ A simple micro-service demonstration project with `users-service`, `listings-ser
 
 ## Features
 
-- **Users Service**: Full CRUD operations for user management.
-- **Listings Service**: Full CRUD operations for listing management.
+- **Session Management**: Implemented user login/logout and session verification.
+- **Authentication**: Protected listings operations with session-based authentication.
+- **User-Listing Relationship**: Established a database relationship between users and their listings.
 - **Structured Logging**: Integrated Winston for structured JSON logging.
 - **Centralized Error Handling**: Unified error response format across services.
 - **Security**: Basic security headers using Helmet.

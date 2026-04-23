@@ -55,6 +55,33 @@ This document describes the API endpoints for the Users Service and Listings Ser
 * **Success Response:**
     * **Code:** 204
 
+### Login (Create Session)
+* **URL:** `/sessions`
+* **Method:** `POST`
+* **Data Params:**
+    ```json
+    {
+      "email": "user@example.com",
+      "password": "password123"
+    }
+    ```
+* **Success Response:**
+    * **Code:** 201
+    * **Content:** `{ "id": "session-uuid", "userId": "user-uuid", "expiresAt": "...", "createdAt": "..." }`
+
+### Verify Session
+* **URL:** `/sessions/:sessionId`
+* **Method:** `GET`
+* **Success Response:**
+    * **Code:** 200
+    * **Content:** `{ "session": { ... }, "user": { ... } }`
+
+### Logout (Delete Session)
+* **URL:** `/sessions/:sessionId`
+* **Method:** `DELETE`
+* **Success Response:**
+    * **Code:** 204
+
 ---
 
 ## Listings Service (Port 7100)
@@ -64,11 +91,12 @@ This document describes the API endpoints for the Users Service and Listings Ser
 * **Method:** `GET`
 * **Success Response:**
     * **Code:** 200
-    * **Content:** `{ "listings": [{ "id": 1, "title": "Listing Title", "description": "Listing Description", "createdAt": "...", "updatedAt": "..." }] }`
+    * **Content:** `{ "listings": [{ "id": 1, "title": "Listing Title", "description": "Listing Description", "userId": "user-uuid", "createdAt": "...", "updatedAt": "..." }] }`
 
 ### Create Listing
 * **URL:** `/listings`
 * **Method:** `POST`
+* **Auth Required:** `X-Session-Id` header
 * **Data Params:**
     ```json
     {
@@ -78,21 +106,19 @@ This document describes the API endpoints for the Users Service and Listings Ser
     ```
 * **Success Response:**
     * **Code:** 201
-    * **Content:** `{ "id": 1, "title": "New Listing", "description": "New Description", "createdAt": "...", "updatedAt": "..." }`
+    * **Content:** `{ "id": 1, "title": "New Listing", "description": "New Description", "userId": "user-uuid", "createdAt": "...", "updatedAt": "..." }`
 
 ### Get Listing by ID
 * **URL:** `/listings/:listingId`
 * **Method:** `GET`
 * **Success Response:**
     * **Code:** 200
-    * **Content:** `{ "id": 1, "title": "Listing Title", "description": "Listing Description", "createdAt": "...", "updatedAt": "..." }`
-* **Error Response:**
-    * **Code:** 404
-    * **Content:** `{ "error": { "message": "Listing not found", "status": 404 } }`
+    * **Content:** `{ "id": 1, "title": "...", "description": "...", "userId": "..." }`
 
 ### Update Listing
 * **URL:** `/listings/:listingId`
 * **Method:** `PUT`
+* **Auth Required:** `X-Session-Id` header (Must be the owner)
 * **Data Params:**
     ```json
     {
@@ -102,10 +128,11 @@ This document describes the API endpoints for the Users Service and Listings Ser
     ```
 * **Success Response:**
     * **Code:** 200
-    * **Content:** `{ "id": 1, "title": "Updated Title", "description": "Updated Description", "createdAt": "...", "updatedAt": "..." }`
+    * **Content:** `{ "id": 1, "title": "Updated Title", "description": "Updated Description", "userId": "...", "updatedAt": "..." }`
 
 ### Delete Listing
 * **URL:** `/listings/:listingId`
 * **Method:** `DELETE`
+* **Auth Required:** `X-Session-Id` header (Must be the owner)
 * **Success Response:**
     * **Code:** 204
