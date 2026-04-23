@@ -33,6 +33,16 @@ const setupRoutes = (app) => {
   });
 
   /**
+   * @api {get} /users Get all users
+   * @apiName GetUsers
+   * @apiGroup User
+   */
+  app.get('/users', async (req, res) => {
+    const users = await User.findAll();
+    return res.json(users);
+  });
+
+  /**
    * @api {get} /users/:userId Get user by ID
    * @apiName GetUser
    * @apiGroup User
