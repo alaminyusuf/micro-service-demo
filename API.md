@@ -1,138 +1,90 @@
-# API Documentation
+# GraphQL API Documentation
 
-This document describes the API endpoints for the Users Service and Listings Service.
+This project has been migrated from REST to GraphQL. The `api-gateway` listens on port `7000` and serves as the single GraphQL endpoint for all client traffic (`POST /graphql`).
 
-## Users Service (Port 7101)
+## Types
 
-### Get All Users
-* **URL:** `/users`
-* **Method:** `GET`
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `[{ "id": "uuid", "email": "user@example.com", "createdAt": "...", "updatedAt": "..." }]`
+```graphql
+type Listing {
+  id: ID!
+  title: String!
+  description: String!
+  userId: ID!
+  idempotencyKey: String
+}
 
-### Create User
-* **URL:** `/users`
-* **Method:** `POST`
-* **Data Params:**
-    ```json
-    {
-      "email": "user@example.com",
-      "password": "password123"
-    }
-    ```
-* **Success Response:**
-    * **Code:** 201
-    * **Content:** `{ "id": "uuid", "email": "user@example.com", "createdAt": "...", "updatedAt": "..." }`
+type User {
+  id: ID!
+  email: String!
+}
 
-### Get User by ID
-* **URL:** `/users/:userId`
-* **Method:** `GET`
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `{ "id": "uuid", "email": "user@example.com", "createdAt": "...", "updatedAt": "..." }`
-* **Error Response:**
-    * **Code:** 404
-    * **Content:** `{ "error": { "message": "User not found", "status": 404 } }`
+type SessionInfo {
+  session: Session!
+  user: User!
+}
 
-### Update User
-* **URL:** `/users/:userId`
-* **Method:** `PUT`
-* **Data Params:**
-    ```json
-    {
-      "email": "new-email@example.com",
-      "password": "new-password123"
-    }
-    ```
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `{ "id": "uuid", "email": "new-email@example.com", "createdAt": "...", "updatedAt": "..." }`
+type Session {
+  id: ID!
+  userId: ID!
+  expiresAt: String!
+}
+```
 
-### Delete User
-* **URL:** `/users/:userId`
-* **Method:** `DELETE`
-* **Success Response:**
-    * **Code:** 204
+## Queries
 
-### Login (Create Session)
-* **URL:** `/sessions`
-* **Method:** `POST`
-* **Data Params:**
-    ```json
-    {
-      "email": "user@example.com",
-      "password": "password123"
-    }
-    ```
-* **Success Response:**
-    * **Code:** 201
-    * **Content:** `{ "id": "session-uuid", "userId": "user-uuid", "expiresAt": "...", "createdAt": "..." }`
+### `listings`
+Fetches all listings ordered by creation date.
+```graphql
+query {
+  listings {
+    id
+    title
+    description
+    userId
+  }
+}
+```
 
-### Verify Session
-* **URL:** `/sessions/:sessionId`
-* **Method:** `GET`
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `{ "session": { ... }, "user": { ... } }`
+### `listing(id: ID!)`
+Fetches a specific listing by its ID.
 
-### Logout (Delete Session)
-* **URL:** `/sessions/:sessionId`
-* **Method:** `DELETE`
-* **Success Response:**
-    * **Code:** 204
+### `users`
+Fetches all users.
+
+### `user(id: ID!)`
+Fetches a specific user by their ID.
+
+### `session(id: ID!)`
+Verifies a session and returns the active session object alongside the user details.
 
 ---
 
-## Listings Service (Port 7100)
+## Mutations
 
-### Get All Listings
-* **URL:** `/listings`
-* **Method:** `GET`
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `{ "listings": [{ "id": 1, "title": "Listing Title", "description": "Listing Description", "userId": "user-uuid", "createdAt": "...", "updatedAt": "..." }] }`
+### `createListing(title: String!, description: String!, idempotencyKey: String): Listing!`
+Creates a new listing.
+**Headers Required:** `x-session-id`
+**Idempotency:** Pass string into `idempotencyKey` to ensure multiple identical requests simulate exactly-once execution.
 
-### Create Listing
-* **URL:** `/listings`
-* **Method:** `POST`
-* **Auth Required:** `X-Session-Id` header
-* **Data Params:**
-    ```json
-    {
-      "title": "New Listing",
-      "description": "New Description"
-    }
-    ```
-* **Success Response:**
-    * **Code:** 201
-    * **Content:** `{ "id": 1, "title": "New Listing", "description": "New Description", "userId": "user-uuid", "createdAt": "...", "updatedAt": "..." }`
+### `updateListing(id: ID!, title: String, description: String): Listing!`
+Updates a listing. You must own this listing.
+**Headers Required:** `x-session-id`
 
-### Get Listing by ID
-* **URL:** `/listings/:listingId`
-* **Method:** `GET`
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `{ "id": 1, "title": "...", "description": "...", "userId": "..." }`
+### `deleteListing(id: ID!): Boolean!`
+Deletes a listing. You must own this listing.
+**Headers Required:** `x-session-id`
 
-### Update Listing
-* **URL:** `/listings/:listingId`
-* **Method:** `PUT`
-* **Auth Required:** `X-Session-Id` header (Must be the owner)
-* **Data Params:**
-    ```json
-    {
-      "title": "Updated Title",
-      "description": "Updated Description"
-    }
-    ```
-* **Success Response:**
-    * **Code:** 200
-    * **Content:** `{ "id": 1, "title": "Updated Title", "description": "Updated Description", "userId": "...", "updatedAt": "..." }`
+### `createUser(email: String!, password: String!): User!`
+Creates a new user.
 
-### Delete Listing
-* **URL:** `/listings/:listingId`
-* **Method:** `DELETE`
-* **Auth Required:** `X-Session-Id` header (Must be the owner)
-* **Success Response:**
-    * **Code:** 204
+### `updateUser(id: ID!, email: String, password: String): User!`
+Updates a user's details.
+
+### `deleteUser(id: ID!): Boolean!`
+Deletes a user.
+
+### `createSession(email: String!, password: String!): Session!`
+Creates a login session and returns the Session object.
+
+### `deleteSession(id: ID!): Boolean!`
+Logs a user out by invalidating their Session.

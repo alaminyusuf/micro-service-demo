@@ -2,15 +2,15 @@
 
 A simple micro-service demonstration project with `users-service`, `listings-service`, and an `api-gateway`.
 
-## Features
+## Advanced Features & Refactoring
 
-- **Session Management**: Implemented user login/logout and session verification.
-- **Authentication**: Protected listings operations with session-based authentication.
-- **User-Listing Relationship**: Established a database relationship between users and their listings.
-- **Structured Logging**: Integrated Winston for structured JSON logging.
-- **Centralized Error Handling**: Unified error response format across services.
-- **Security**: Basic security headers using Helmet.
-- **Documentation**: Inline JSDoc and comprehensive API documentation.
+- **Database Relationships**: Listings carry a `userId` denoting the user who owns them.
+- **REST to GraphQL Migration**: The `users-service` and `listings-service` have been refactored from Express REST APIs into GraphQL microservices using `apollo-server-express`.
+- **API Gateway Federation**: The `api-gateway` operates as the single entry point. It accepts GraphQL requests and delegates them to internal microservice GraphQL endpoints using a custom HTTP fetcher.
+- **Idempotency**: Added an `idempotencyKey` parameter to the `createListing` mutation to simulate secure, deduplicated operations (like financial transactions or inventory provisioning).
+- **Service Resiliency & Circuit Breakers**: Configured an `opossum` Circuit Breaker in the gateway. If a downstream service is struggling or offline, the circuit breaker opens and fails fast, protecting resources.
+- **Load Balancing**: The API Gateway uses a simple round-robin Array approach to route to internal service instances.
+- **Unified Error Handling & Logging**: Installed and configured `winston` for application logs across all three services, alongside consistent `apollo-server` `formatError` interceptors.
 
 ## Getting Started
 
@@ -27,17 +27,12 @@ A simple micro-service demonstration project with `users-service`, `listings-ser
    docker-compose up --build
    ```
 
-## API Documentation
+## Documentation
 
-For detailed information on API endpoints, request patterns, and response formats, please refer to [API.md](./API.md).
+For detailed information on the new GraphQL API documentation, types, and request formats, please refer to [API.md](./API.md).
 
 ## Project Structure
 
-- `api-gateway/`: Routes requests to the appropriate microservice.
-- `users-service/`: Manages user data and sessions.
-- `listings-service/`: Manages listings data.
-- `API.md`: Detailed API documentation.
-
-## Logging & Error Handling
-
-Each service uses Winston for logging and a centralized error handling middleware to ensure consistent error responses in JSON format.
+- `api-gateway/`: GraphQL gateway with Circuit Breaker and Load Balancing.
+- `users-service/`: GraphQL service managing user data and session authentication.
+- `listings-service/`: GraphQL service managing listings, ownership, and idempotency logic.
