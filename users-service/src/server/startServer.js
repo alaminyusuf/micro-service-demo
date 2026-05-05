@@ -8,6 +8,10 @@ import logger from '#root/helpers/logger';
 import setupRoutes from './routes';
 import errorHandler from './middleware/errorHandler';
 
+import { ApolloServer } from 'apollo-server-express';
+import typeDefs from '../graphql/typeDefs';
+import resolvers from '../graphql/resolvers';
+
 const app = express();
 
 app.use(helmet());
@@ -21,7 +25,16 @@ app.use(
   })
 );
 
-setupRoutes(app);
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  formatError: (error) => {
+    logger.error('GraphQL Error:', error);
+    return error;
+  },
+});
+
+apolloServer.applyMiddleware({ app, path: '/graphql' });
 
 app.use(errorHandler);
 

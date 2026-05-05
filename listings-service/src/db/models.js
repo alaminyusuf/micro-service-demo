@@ -17,6 +17,10 @@ Listing.init(
       allowNull: false,
       type: DataTypes.UUID,
     },
+    idempotencyKey: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
   },
   {
     modelName: 'listings',

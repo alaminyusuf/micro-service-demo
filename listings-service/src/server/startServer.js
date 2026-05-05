@@ -8,6 +8,13 @@ import logger from '../helpers/logger';
 import setupRoutes from './routes';
 import errorHandler from './middleware/errorHandler';
 
+import { ApolloServer } from 'apollo-server-express';
+import typeDefs from '../graphql/typeDefs';
+import resolvers from '../graphql/resolvers';
+import axios from 'axios';
+
+const USERS_SERVICE_URL = process.env.USERS_SERVICE_URL || 'http://users-service:7101';
+
 const app = express();
 
 app.use(helmet());
@@ -21,7 +28,31 @@ app.use(
   })
 );
 
-setupRoutes(app);
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: async ({ req }) => {
+    const sessionId = req.headers['x-session-id'];
+    if (!sessionId) return { req };
+    try {
+      const response = await axios.post(`${USERS_SERVICE_URL}/graphql`, {
+        query: `query { session(id: "${sessionId}") { user { id email } } }`
+      });
+      if (response.data.data && response.data.data.session) {
+        return { req, user: response.data.data.session.user, sessionId };
+      }
+      return { req };
+    } catch (e) {
+      return { req };
+    }
+  },
+  formatError: (error) => {
+    logger.error('GraphQL Error:', error);
+    return error;
+  },
+});
+
+apolloServer.applyMiddleware({ app, path: '/graphql' });
 
 app.use(errorHandler);
 
