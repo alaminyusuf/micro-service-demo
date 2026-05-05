@@ -6,10 +6,15 @@ import express from 'express';
 import resolvers from '#root/graphql/resolvers';
 import typeDefs from '#root/graphql/typeDefs';
 
-// import accessEnv from '#root/helpers/accessEnv';
+import accessEnv from '#root/helpers/accessEnv';
+import logger from '#root/helpers/logger';
 
 const apolloServer = new ApolloServer({
   context: (a) => a,
+  formatError: (error) => {
+    logger.error('GraphQL Error:', error);
+    return error;
+  },
   resolvers,
   typeDefs,
 });
