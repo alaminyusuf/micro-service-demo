@@ -3445,6 +3445,11 @@ one-time@^1.0.0:
   dependencies:
     fn.name "1.x.x"
 
+opossum@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/opossum/-/opossum-9.0.0.tgz#0f8050377d16324f5bf17d771ea8f6821375e209"
+  integrity sha512-K76U0QkxOfUZamneQuzz+AP0fyfTJcCplZ2oZL93nxeupuJbN4s6uFNbmVCt4eWqqGqRnnowdFuBicJ1fLMVxw==
+
 p-cancelable@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/p-cancelable/-/p-cancelable-2.0.0.tgz#4a3740f5bdaf5ed5d7c3e34882c6fb5d6b266a6e"
